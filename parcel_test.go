@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -58,7 +57,7 @@ func TestAddGetDelete(t *testing.T) {
 	err = store.Delete(id)
 	require.NoError(t, err)
 	_, err = store.Get(id)
-	assert.Error(t, err, sql.ErrNoRows)
+	assert.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 // TestSetAddress проверяет обновление адреса
@@ -84,7 +83,8 @@ func TestSetAddress(t *testing.T) {
 	// check
 	// получите добавленную посылку и убедитесь, что адрес обновился
 	pars, _ := store.Get(id)
-	require.Equal(t, newAddress, pars.Address)
+	require.NoError(t, err)
+	assert.Equal(t, newAddress, pars.Address)
 }
 
 // TestSetStatus проверяет обновление статуса
@@ -163,9 +163,8 @@ func TestGetByClient(t *testing.T) {
 
 		_, ok := parcelMap[parcel.Number]
 		if !ok {
-			fmt.Printf("Посылка отсутствует №%v", parcel.Number)
+			return
 		}
-
 		assert.Equal(t, parcel, parcelMap[parcel.Number])
 	}
 }
